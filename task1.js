@@ -12,32 +12,32 @@
  
 */
 
-async function returnUser(id) {
-  const response = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
-  return await response.json();
+import axios from 'axios';
+
+async function returnUser() {
+  const response = await fetch(`https://jsonplaceholder.typicode.com/users`);
+  return response.json();
 }
 
-async function returnWeather(latitude, longitude) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
-  const response = await fetch(url);
-  return await response.json();
+async function returnWeather(latitude, longitude) {    
+  const response = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+  return response.data; 
 }
 
+const users = await returnUser();
 const persons = [];
 
-for (let i = 1; i <= 10; i++) {
+for (const user of users) {
   
-  const userData = await returnUser(i);
-  
-  const lat = userData.address.geo.lat;
-  const lng = userData.address.geo.lng;
+  const lat = user.address.geo.lat;
+  const lng = user.address.geo.lng;
 
   const weatherData = await returnWeather(lat, lng);
 
   let myObj = {
-    id: userData.id,
-    name: userData.name,
-    phone: userData.phone,
+    id: user.id,
+    name: user.name,
+    phone: user.phone,
     latitude: lat,
     longitude: lng,
     temperature: weatherData.current_weather.temperature,
